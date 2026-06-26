@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments Enrollment[]
+  sessions    Session[]
+}
+
+// User sessions for authentication (multi-device support, max 2 devices)
+model Session {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Device info
+  deviceName      String   // e.g., "Chrome on Windows", "Safari on iPhone"
+  deviceType      String   // "web", "mobile", "tablet"
+  ipAddress       String
+  userAgent       String
+  
+  // Tokens
+  refreshTokenHash String  // Hashed refresh token
+  accessTokenExp   DateTime // When access token expires (15 min)
+  refreshTokenExp  DateTime // When refresh token expires (30 days)
+  
+  // Metadata
+  isActive        Boolean  @default(true)
+  lastUsedAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+// Verification tokens for pending signup
+model VerificationToken {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  type           String   @default("signup")
+  hashedPassword String
+  firstName      String
+  lastName       String?
+  hashedOtp      String
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([email])
+}
+
+// BIM Training Courses
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String   // e.g., "BIM", "Revit", "AutoCAD", "Civil 3D"
+  level       String   // "Beginner", "Intermediate", "Advanced"
+  duration    String   // e.g., "40 hours"
+  price       Float
+  image       String?
+  instructor  String
+  rating      Float    @default(0)
+  ratingCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enrollments Enrollment[]
+
+  @@index([category])
+}
+
+// User enrollments in courses
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress  Int      @default(0) // 0-100
+  status    String   @default("enrolled") // "enrolled", "completed", "dropped"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+// Client testimonials
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  image     String?
+  content   String
+  rating    Int      @default(5)
+  createdAt DateTime @default(now())
+}
