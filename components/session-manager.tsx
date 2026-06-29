@@ -1,26 +1,27 @@
 'use client';
 
-import { useSessions, useDeleteSession } from '@/hooks/use-sessions';
-import { useLogout } from '@/hooks/use-auth-mutations';
-import { LogOut, Trash2, Loader } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useSessions, useDeleteSession, useDeleteSessions } from '@/hooks/use-sessions';
+import {Trash2, Loader } from 'lucide-react';
+
 
 export function SessionManager() {
-  const router = useRouter();
+  
   const { data: sessions, isLoading, error } = useSessions();
   const deleteSessionMutation = useDeleteSession();
-  const logoutMutation = useLogout();
+  const deleteSessionsMutation = useDeleteSessions();
 
   const handleDeleteSession = (sessionId: string) => {
     deleteSessionMutation.mutate(sessionId);
   };
 
-  const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        router.push('/sign-in');
-      },
-    });
+  const handleDeleteAllSessions = () => {
+    if (!sessions || sessions.length === 0) {
+      return;
+    }
+
+    deleteSessionsMutation.mutate(
+      sessions.map((session) => session.id),
+    );
   };
 
   return (
@@ -74,18 +75,23 @@ export function SessionManager() {
         </div>
       )}
 
-      <button
-        onClick={handleLogout}
-        disabled={logoutMutation.isPending}
-        className="w-full flex items-center justify-center gap-2 btn-secondary text-red-600 border-red-300 disabled:opacity-50"
-      >
-        {logoutMutation.isPending ? (
-          <Loader size={20} className="animate-spin" />
-        ) : (
-          <LogOut size={20} />
-        )}
-        Logout from All Devices
-      </button>
+      <div className="space-y-3">
+        <button
+          onClick={handleDeleteAllSessions}
+          disabled={deleteSessionsMutation.isPending || !sessions || sessions.length === 0}
+          className="w-full flex items-center justify-center gap-2 btn-secondary text-red-600 border-red-300 disabled:opacity-50"
+          title="Delete all active sessions"
+        >
+          {deleteSessionsMutation.isPending ? (
+            <Loader size={20} className="animate-spin" />
+          ) : (
+            <Trash2 size={20} />
+          )}
+          Logout from All Devices
+        </button>
+
+      
+      </div>
     </div>
   );
 }

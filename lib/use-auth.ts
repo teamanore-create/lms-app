@@ -28,7 +28,7 @@ export interface AuthResponse {
 }
 
 const STORAGE_KEY_ACCESS = 'auth_access_token';
-const STORAGE_KEY_REFRESH = 'auth_refresh_token';
+// const STORAGE_KEY_REFRESH = 'auth_refresh_token';
 const STORAGE_KEY_USER = 'auth_user';
 const STORAGE_KEY_EXPIRY = 'auth_token_expiry';
 
@@ -173,16 +173,16 @@ export function useAuth() {
 
   const refreshAccessToken = useCallback(async (): Promise<boolean> => {
     try {
-      const refreshToken = localStorage.getItem(STORAGE_KEY_REFRESH);
-      if (!refreshToken) {
-        clearAuthData();
-        return false;
-      }
+      // const refreshToken = localStorage.getItem(STORAGE_KEY_REFRESH);
+      // if (!refreshToken) {
+      //   clearAuthData();
+      //   return false;
+      // }
 
       const response = await fetch('/api/auth/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken }),
+        // body: JSON.stringify({ refreshToken }),
       });
 
       if (!response.ok) {
@@ -194,7 +194,7 @@ export function useAuth() {
       
       // Update only tokens, keep user data
       localStorage.setItem(STORAGE_KEY_ACCESS, data.tokens.accessToken);
-      localStorage.setItem(STORAGE_KEY_REFRESH, data.tokens.refreshToken);
+      // localStorage.setItem(STORAGE_KEY_REFRESH, data.tokens.refreshToken);
       localStorage.setItem(
         STORAGE_KEY_EXPIRY,
         (Date.now() + data.tokens.expiresIn * 1000).toString()
@@ -215,7 +215,7 @@ export function useAuth() {
   const storeAuthData = (data: AuthResponse) => {
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(data.user));
     localStorage.setItem(STORAGE_KEY_ACCESS, data.tokens.accessToken);
-    localStorage.setItem(STORAGE_KEY_REFRESH, data.tokens.refreshToken);
+    // localStorage.setItem(STORAGE_KEY_REFRESH, data.tokens.refreshToken);
     localStorage.setItem(
       STORAGE_KEY_EXPIRY,
       (Date.now() + data.tokens.expiresIn * 1000).toString()
@@ -229,7 +229,7 @@ export function useAuth() {
   const clearAuthData = () => {
     localStorage.removeItem(STORAGE_KEY_USER);
     localStorage.removeItem(STORAGE_KEY_ACCESS);
-    localStorage.removeItem(STORAGE_KEY_REFRESH);
+    // localStorage.removeItem(STORAGE_KEY_REFRESH);
     localStorage.removeItem(STORAGE_KEY_EXPIRY);
 
     setUser(null);

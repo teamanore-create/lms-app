@@ -9,6 +9,8 @@ import type {
   VerifyOtpResponse,
   ResendOtpResponse,
   LogoutResponse,
+  ForgotPasswordResponse,
+  ResetPasswordResponse,
   ApiError,
 } from "@/types";
 import { AxiosError } from "axios";
@@ -145,6 +147,48 @@ export function useLogout() {
     onError: () => {
       // Even if the server call fails, clear local auth state
       clearAuth();
+    },
+  });
+}
+
+// ─── Forgot Password Mutation ────────────────────────────────
+interface ForgotPasswordInput {
+  email: string;
+}
+
+export function useForgotPassword() {
+  return useMutation<ForgotPasswordResponse, Error, ForgotPasswordInput>({
+    mutationFn: async (input) => {
+      const { data } = await api.post<ForgotPasswordResponse>(
+        "/api/auth/forgot-password",
+        input,
+      );
+      return data;
+    },
+    onError: (error) => {
+      console.error("Forgot password failed:", getErrorMessage(error));
+    },
+  });
+}
+
+// ─── Reset Password Mutation ─────────────────────────────────
+interface ResetPasswordInput {
+  email: string;
+  otp: string;
+  password: string;
+}
+
+export function useResetPassword() {
+  return useMutation<ResetPasswordResponse, Error, ResetPasswordInput>({
+    mutationFn: async (input) => {
+      const { data } = await api.post<ResetPasswordResponse>(
+        "/api/auth/reset-password",
+        input,
+      );
+      return data;
+    },
+    onError: (error) => {
+      console.error("Reset password failed:", getErrorMessage(error));
     },
   });
 }

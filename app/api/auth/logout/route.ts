@@ -12,11 +12,9 @@ export async function POST(request: Request) {
         { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
-    // Mark session as inactive
-    await prisma.session.update({
-      where: { id: auth.sessionId },
-      data: { isActive: false },
+    // Delete session
+    await prisma.session.delete({
+      where: { id: auth.sessionId }
     });
 
     return new Response(

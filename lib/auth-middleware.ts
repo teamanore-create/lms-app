@@ -52,7 +52,7 @@ export async function withAuth(request: Request, handler: (auth: AuthRequest, re
     where: { id: auth.sessionId },
   });
   
-  if (!session || !session.isActive) {
+  if (!session) {
     return new Response(
       JSON.stringify({ error: 'Session not found or expired' }),
       { status: 401, headers: { 'Content-Type': 'application/json' } }
@@ -84,7 +84,7 @@ export async function verifyRefreshToken(token: string): Promise<{ userId: strin
       where: { id: payload.sessionId },
     });
     
-    if (!session || !session.isActive) {
+    if (!session) {
       return null;
     }
     

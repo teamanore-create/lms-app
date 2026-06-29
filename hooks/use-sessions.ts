@@ -40,3 +40,21 @@ export function useDeleteSession() {
     },
   });
 }
+
+// ─── Delete Multiple Sessions Mutation ──────────────────────────
+export function useDeleteSessions() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string[]>({
+    mutationFn: async (sessionIds: string[]) => {
+      await api.delete("/api/auth/sessions", {
+        data: {
+          sessionIds,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionKeys.all });
+    },
+  });
+}

@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       include: { user: true },
     });
 
-    if (!session || !session.isActive) {
+    if (!session) {
       return new Response(
         JSON.stringify({ error: "Session not found or expired" }),
         { status: 401, headers: { "Content-Type": "application/json" } },

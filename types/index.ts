@@ -23,6 +23,12 @@ export interface AuthSession {
   lastUsedAt?: string;
 }
 
+/** GET /api/auth/me */
+export interface MeResponse {
+  success: boolean;
+  user: AuthUser;
+}
+
 /** POST /api/auth/login */
 export interface LoginResponse {
   success: boolean;
@@ -47,6 +53,18 @@ export interface VerifyOtpResponse {
 
 /** POST /api/auth/resend-otp */
 export interface ResendOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+/** POST /api/auth/forgot-password */
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+/** POST /api/auth/reset-password */
+export interface ResetPasswordResponse {
   success: boolean;
   message: string;
 }

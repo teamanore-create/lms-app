@@ -123,7 +123,6 @@ export function extractDeviceInfo(request: Request) {
   const deviceName = getDeviceName(userAgent, deviceType);
   
   return {
-    userAgent,
     ipAddress: ip.split(',')[0].trim(),
     deviceType,
     deviceName,

@@ -10,8 +10,8 @@ export default function LoginForm() {
   const router = useRouter();
   const loginMutation = useLogin();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: 'shubham.anoreinfotech@gmail.com',
+    password: 'qwerty@$54321',
   });
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -75,9 +75,17 @@ export default function LoginForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-semibold text-neutral-700">
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-blue-600 font-semibold hover:text-blue-700"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 type="password"
                 name="password"

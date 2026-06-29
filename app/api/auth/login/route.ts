@@ -53,16 +53,16 @@ export async function POST(request: Request) {
     const activeSessions = await prisma.session.findMany({
       where: {
         userId: user.id,
-        isActive: true,
       },
       orderBy: { createdAt: "asc" },
     });
 
     // If at max devices, delete the oldest session
     if (activeSessions.length >= MAX_DEVICES) {
-      await prisma.session.update({
-        where: { id: activeSessions[0].id },
-        data: { isActive: false },
+      await prisma.session.delete({
+        where: {
+          id: activeSessions[0].id,
+        },
       });
     }
 
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         ...deviceInfo,
       },
     });
-
+    
     // Generate tokens
     const accessToken = generateJWTPayload(
       {
@@ -126,10 +126,7 @@ export async function POST(request: Request) {
       { status: 200 },
     );
 
-    return setAuthCookies(
-      response,
-      refreshTokenJWT
-    );
+    return setAuthCookies(response, refreshTokenJWT);
   } catch (error) {
     console.error("Login error:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

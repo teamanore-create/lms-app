@@ -35,7 +35,6 @@ model Session {
   deviceName      String   // e.g., "Chrome on Windows", "Safari on iPhone"
   deviceType      String   // "web", "mobile", "tablet"
   ipAddress       String
-  userAgent       String
   
   // Tokens
   refreshTokenHash String  // Hashed refresh token
@@ -43,13 +42,11 @@ model Session {
   refreshTokenExp  DateTime // When refresh token expires (30 days)
   
   // Metadata
-  isActive        Boolean  @default(true)
   lastUsedAt      DateTime @default(now())
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([userId])
-  @@index([isActive])
 }
 
 // Verification tokens for pending signup

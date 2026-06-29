@@ -15,18 +15,36 @@ function createTransport() {
   });
 }
 
-export async function sendOtpEmail(email: string, otp: string) {
+type OtpEmailPurpose = 'verification' | 'password-reset';
+
+export async function sendOtpEmail(
+  email: string,
+  otp: string,
+  purpose: OtpEmailPurpose = 'verification',
+) {
   const transporter = createTransport();
+  const subject =
+    purpose === 'password-reset'
+      ? 'Your BIM Training Password Reset Code'
+      : 'Your BIM Training Verification Code';
+  const title =
+    purpose === 'password-reset'
+      ? 'Password reset code'
+      : 'Verification code';
+  const description =
+    purpose === 'password-reset'
+      ? 'Use the code below to reset your password.'
+      : 'Use the code below to verify your email address.';
 
   const info = await transporter.sendMail({
     from: fromAddress,
     to: email,
-    subject: 'Your BIM Training Verification Code',
-    text: `Your verification code is ${otp}. It expires in 10 minutes.`,
+    subject,
+    text: `${title}: ${otp}. It expires in 10 minutes.`,
     html: `
       <div style="font-family: Arial, sans-serif; color: #111;">
-        <h2>Your BIM Training verification code</h2>
-        <p>Use the code below to verify your email address:</p>
+        <h2>${subject}</h2>
+        <p>${description}</p>
         <div style="margin: 24px 0; padding: 16px; background: #f8fafc; border-radius: 12px; display: inline-block; font-size: 28px; letter-spacing: 0.2em;">
           <strong>${otp}</strong>
         </div>
